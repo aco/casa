@@ -1,0 +1,27 @@
+[
+  [{
+    "displayColor": "#F47B41",
+    "valueColor": "#ff0000"
+  }, {
+    "displayColor": "#F4BB86",
+    "valueColor": "#ffc500"
+  }, {
+    "displayColor": "#90ddad",
+    "valueColor": "#00ff00"
+  }, {
+    "displayColor": "#7cd1e1",
+    "valueColor": "#00c5cd"
+  }], [{
+    "displayColor": "#2b54d1",
+    "valueColor": "#0000ff"
+  }, {
+    "displayColor": "#CC8EB0",
+    "valueColor": "#9400d3"
+  }, {
+    "displayColor": "#6f51ad",
+    "valueColor": "#ff00ff"
+  }, {
+    "displayColor": "#FFFFFF",
+    "valueColor": "#FFFFFF"
+  }]
+]

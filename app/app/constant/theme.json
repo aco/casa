@@ -1,0 +1,18 @@
+{
+  "light": {
+    "backgroundColors": ["#ffffff", "#efefef"],
+    "primaryText": "#20303c",
+    "secondaryText": "#43515c",
+    "tertiaryText": "#858f96",
+    "accentControl": "#459fed",
+    "boldText": "#000000"
+  },
+  "dark": {
+    "backgroundColors": ["#06365a", "#0f1e3d"],
+    "primaryText": "#efefef",
+    "secondaryText": "#43515c",
+    "tertiaryText": "#5f788c",
+    "accentControl": "#459fed",
+    "boldText": "#f1f1f1"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "files.associations": {
+    "*.ipp": "c",
+    "typeindex": "c",
+    "typeinfo": "c",
+    "__functional_base": "c",
+    "__functional_base_03": "c",
+    "__hash_table": "c",
+    "__tree": "c",
+    "__tuple": "c",
+    "array": "c",
+    "chrono": "c",
+    "functional": "c",
+    "limits": "c",
+    "memory": "c",
+    "ratio": "c",
+    "tuple": "c",
+    "type_traits": "c",
+    "utility": "c",
+    "room.h": "c",
+    "appliance.h": "c",
+    "uthash.h": "c",
+    "__locale": "c",
+    "bitset": "c",
+    "parson.h": "c",
+    "stdio.h": "c",
+    "set": "c",
+    "valarray": "c"
+  }
+}
