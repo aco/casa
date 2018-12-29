@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Casa", "Casa\Casa.vcxproj", "{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Debug|ARM64 = Debug|ARM64
+		Release|ARM = Release|ARM
+		Release|ARM64 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Debug|ARM.ActiveCfg = Debug|ARM
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Debug|ARM.Build.0 = Debug|ARM
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Debug|ARM64.Build.0 = Debug|ARM64
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Release|ARM.ActiveCfg = Release|ARM
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Release|ARM.Build.0 = Release|ARM
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Release|ARM64.ActiveCfg = Release|ARM64
+		{1E8548A7-EF6C-4E09-8467-6C2FD6B34804}.Release|ARM64.Build.0 = Release|ARM64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B87E948B-41D3-433C-B4C7-295D20DC65C6}
+	EndGlobalSection
+EndGlobal
