@@ -14,6 +14,14 @@ import THEME from '../constant/theme';
 const default_host = '192.168.0.15';
 const default_port = 4045;
 
+import {
+  DeviceCheck
+} from '../provider';
+
+import {
+  SwitchSelect
+} from '../control';
+
 /**
  * Configuration screen for the host and port of controller - can also run as a demo
  */
@@ -22,8 +30,31 @@ export class Configuration extends React.Component {
   constructor(props) {
     super(props);
 
+    // storing in state is unnecessary
     this.host = null;
     this.port = null;
+    this.profile = 'owner';
+
+    this.theme = THEME.light;
+
+    this.profiles = [{
+      label: 'Owner', 
+      value: 'owner'
+    }, {
+      label: 'Neighbour', 
+      value: 'neighbour'
+    }, {
+      label: 'Child', 
+      value: 'child'
+    }];
+  }
+
+  componentWillMount() {
+    DeviceCheck.getDeviceToken().then(token =>
+      console.log(token)
+    ).catch(err =>
+      console.log(err)
+    );
   }
 
   render() {
@@ -60,7 +91,8 @@ export class Configuration extends React.Component {
             onPress={() =>
               this.props.onSubmitConfiguration({
                 host: this.host || default_host,
-                port: this.port || default_port
+                port: this.port || default_port,
+                profile: this.profile
               })
             }
           >
@@ -77,6 +109,20 @@ export class Configuration extends React.Component {
           >
             <Text style={styles.buttonLabel}>Run as Demo</Text>
           </TouchableOpacity>
+
+          <SwitchSelect hasPadding
+            style={styles.switchSelect}
+            initial={0}
+            textColor={this.theme.accentControl}
+            selectedColor='white'
+            buttonColor={this.theme.accentControl}
+            borderColor={this.theme.backgroundColors[1]}
+
+            options={this.profiles}
+            onPress={value => 
+              this.profile = value
+            }
+          />
         </View>
       </KeyboardAvoidingView>
     );
@@ -122,5 +168,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: THEME.light.accentControl,
     color: THEME.light.primaryText
+  },
+  switchSelect: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingVertical: 80,
+    paddingHorizontal: 10
   }
 });
