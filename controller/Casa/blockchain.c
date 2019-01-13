@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+#include <stdlib.h>
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 #include <stdio.h>
 #include <time.h>
 #include <memory.h>
@@ -12,16 +16,47 @@
 struct Block *lead_block;
 uint8_t current_transaction_count;
 
+<<<<<<< HEAD
+=======
+/// <summary>
+/// Computes the block hash using a combination of properties as the seed.
+/// </summary>
+/// <param name="block">Subject block.</param>
+/// <param name="hash_dest">Destination for computed hash.</param>
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 {
 	char hash_buffer[SHA256_BYTES * 2];
 
+<<<<<<< HEAD
 	snprintf(hash_buffer, sizeof(hash_buffer), "%s.%d.%d", block->data, block->index,
 		block->timestamp); // concatenate block data, timestamp and index block hash input
+=======
+	int timestamp_sum = 0;
+
+	for (uint8_t i = 0; i < BLOCK_SIZE; i++)
+	{
+		if (block->transactions[i] != NULL)
+		{
+			timestamp_sum += block->transactions[i]->timestamp + block->transactions[i]->value;
+		}
+	}
+
+	snprintf(hash_buffer, sizeof(hash_buffer), "%s.%d.%d.%d", block->data, block->index,
+		timestamp_sum / block->timestamp); // concatenate block data, index and transaction cumulitive timestamp / block timestamp
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 	sha256(hash_buffer, strlen(hash_buffer), hash_dest);
 }
 
+<<<<<<< HEAD
+=======
+/// <summary>
+/// Computes the block hash using a combination of properties as the seed.
+/// </summary>
+/// <param name="block">Subject block.</param>
+/// <param name="hash_dest">Destination for computed hash.</param>
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 struct Block *build_new_block(const char *data)
 {
 	struct Block *block = malloc(sizeof(struct Block));
@@ -32,7 +67,10 @@ struct Block *build_new_block(const char *data)
 	block->prev_block = lead_block;
 
 	strcpy(block->data, data);
+<<<<<<< HEAD
 	compute_block_hash(block, block->hash);
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 	return block;
 }
@@ -71,12 +109,33 @@ int construct_blockchain(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 bool permit_proposed_transaction(const char *node, const char *room, int value, int client_identifier, bool force_wrap)
 {
 	if (force_wrap || current_transaction_count == BLOCK_SIZE)
 	{
 		printf("[~] Sealing block #%d with %d/%d transactions\n", lead_block->index, 
 			current_transaction_count, BLOCK_SIZE);
+=======
+/// <summary>
+/// Evaluates a proposed transaction against ruleset and records in the current block.
+/// </summary>
+/// <param name="node">Node name.</param>
+/// <param name="room">Room name.</param>
+/// <param name="value">Proposed node value.</param>
+/// <param name="client_identifier">Client identifier.</param>
+/// <param name="force_wrap">if set to <c>true</c> [force wrap] will seal the current block regardless of remaining transaction space.</param>
+/// <returns></returns>
+bool permit_proposed_transaction(const char *node, const char *room, int value, int client_identifier, bool force_wrap)
+{
+	// TODO: implement ruleset
+
+	if (force_wrap || current_transaction_count == BLOCK_SIZE)
+	{
+		compute_block_hash(lead_block, lead_block->hash);
+
+		printf("[~] Sealing block #%d at %d%% capacity\n", lead_block->index, (current_transaction_count * 100) / BLOCK_SIZE);
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 		struct Block *new_block = build_new_block("test");
 
@@ -99,6 +158,16 @@ bool permit_proposed_transaction(const char *node, const char *room, int value, 
 	return true;
 }
 
+<<<<<<< HEAD
+=======
+/// <summary>
+/// Builds a JSON representation of the blockchain to a socket.
+/// </summary>
+/// <param name="successor_block_json">The successor block cJSON.</param>
+/// <param name="block">The subject block.</param>
+/// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
+/// <returns></returns>
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain)
 {
 	cJSON *child_block_object = cJSON_CreateObject();
@@ -129,7 +198,16 @@ cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool e
 	}
 }
 
+<<<<<<< HEAD
 void emit_block_json(bool entire_chain)
+=======
+/// <summary>
+/// Builds and emits a JSON representation of the room structure to a socket.
+/// </summary>
+/// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
+/// <param name="dispatch_socket">Client socket to dispatch.</param>
+void emit_block_json(bool entire_chain, int dispatch_socket)
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	cJSON *root_block = cJSON_CreateObject();
 	cJSON *root_object = cJSON_CreateObject();

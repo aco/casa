@@ -37,7 +37,10 @@
 		2DCD954D1E0B4F2C00145EB5 /* casaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* casaTests.m */; };
 		2DF0FFEE2056DD460020B375 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		4913C20221837ED200404286 /* libRCTPushNotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 49571E94218376470008AD54 /* libRCTPushNotification.a */; };
+<<<<<<< HEAD
 		492F7CCD21D92E0400894CEF /* RCTDeviceCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = 492F7CCC21D92E0400894CEF /* RCTDeviceCheck.m */; };
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 		4987A7D02159A87200D5DF00 /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 4987A7CF2159A87200D5DF00 /* GCDAsyncSocket.m */; };
 		49C7B1F12159A724001A33B7 /* RCTTCPSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = 49C7B1F02159A724001A33B7 /* RCTTCPSocket.m */; };
 		49CCBCDE2187A282003D6C05 /* Damion-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 49CCBCDD2187A281003D6C05 /* Damion-Regular.ttf */; };
@@ -399,8 +402,11 @@
 		2D02E47B1E0B4A5D006451C7 /* casa-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "casa-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D02E4901E0B4A5D006451C7 /* casa-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "casa-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
+<<<<<<< HEAD
 		49047E3A21D92389003C30D1 /* RCTDeviceCheck.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RCTDeviceCheck.h; sourceTree = "<group>"; };
 		492F7CCC21D92E0400894CEF /* RCTDeviceCheck.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RCTDeviceCheck.m; sourceTree = "<group>"; };
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 		49571E8D218374210008AD54 /* casa.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = casa.entitlements; path = casa/casa.entitlements; sourceTree = "<group>"; };
 		49571E8E218376470008AD54 /* RCTPushNotification.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTPushNotification.xcodeproj; path = "../node_modules/react-native/Libraries/PushNotificationIOS/RCTPushNotification.xcodeproj"; sourceTree = "<group>"; };
 		4987A7A52159A86500D5DF00 /* GCDAsyncSocket.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GCDAsyncSocket.h; sourceTree = "<group>"; };
@@ -574,8 +580,11 @@
 				49C7B1F02159A724001A33B7 /* RCTTCPSocket.m */,
 				4987A7A52159A86500D5DF00 /* GCDAsyncSocket.h */,
 				4987A7CF2159A87200D5DF00 /* GCDAsyncSocket.m */,
+<<<<<<< HEAD
 				49047E3A21D92389003C30D1 /* RCTDeviceCheck.h */,
 				492F7CCC21D92E0400894CEF /* RCTDeviceCheck.m */,
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 			);
 			name = casa;
 			sourceTree = "<group>";
@@ -1344,7 +1353,10 @@
 				49C7B1F12159A724001A33B7 /* RCTTCPSocket.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+<<<<<<< HEAD
 				492F7CCD21D92E0400894CEF /* RCTDeviceCheck.m in Sources */,
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1476,7 +1488,10 @@
 					"$(SRCROOT)/../node_modules/react-native-notifications/RNNotifications",
 				);
 				INFOPLIST_FILE = casa/Info.plist;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1504,7 +1519,10 @@
 					"$(SRCROOT)/../node_modules/react-native-notifications/RNNotifications",
 				);
 				INFOPLIST_FILE = casa/Info.plist;
+<<<<<<< HEAD
 				IPHONEOS_DEPLOYMENT_TARGET = 11.1;
+=======
+>>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
