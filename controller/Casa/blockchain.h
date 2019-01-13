@@ -13,8 +13,4 @@ bool permit_proposed_transaction(const char *node, const char *room, int value, 
 int construct_blockchain(void);
 
 cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain);
-<<<<<<< HEAD
-void emit_block_json(bool entire_chain);
-=======
 void emit_block_json(bool entire_chain, int dispatch_socket);
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110

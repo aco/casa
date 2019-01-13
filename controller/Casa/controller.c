@@ -34,11 +34,7 @@ const char *node_type_ref[NODETEMPERATURE + 1] =
 /// </summary>
 /// <param name="name">Name of the room.</param>
 /// <param name="thermalGPIO">GPIO pin # registered to a temperature sensor.</param>
-<<<<<<< HEAD
-void add_room(const char* name, int thermalGPIO)
-=======
 void add_room(const char* name, uint8_t thermalGPIO)
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	struct Room *room = malloc(sizeof(struct Room));
 
@@ -59,11 +55,7 @@ void add_room(const char* name, uint8_t thermalGPIO)
 /// <param name="gpio">Node GPIO pin (wiringPi).</param>
 /// <param name="mode">Interrupt mode.</param>
 /// <param name="change_handler">Handler routine.</param>
-<<<<<<< HEAD
-void add_node_to_room_handle(const char *room_name, const char *name, NodeType type, int gpio, int mode, void(change_handler)(void))
-=======
 void add_node_to_room_handle(const char *room_name, const char *name, NodeType type, uint8_t gpio, int mode, void(change_handler)(void))
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	add_node_to_room(room_name, name, type, gpio);
 
@@ -84,11 +76,7 @@ void add_node_to_room_handle(const char *room_name, const char *name, NodeType t
 /// <param name="g_gpio">The green GPIO pin.</param>
 /// <param name="b_gpio">The blue GPIO pin.</param>
 /// <returns>Pointer to the new struct node - discardable.</returns>
-<<<<<<< HEAD
-struct Node *add_node_to_room_rgb(const char *room_name, const char *name, int rgb_gpio[3])
-=======
 struct Node *add_node_to_room_rgb(const char *room_name, const char *name, uint8_t rgb_gpio[3])
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	struct Room *room;
 	struct Node *node = malloc(sizeof(struct Node));
@@ -120,11 +108,7 @@ struct Node *add_node_to_room_rgb(const char *room_name, const char *name, uint8
 /// <param name="type">Node type.</param>
 /// <param name="gpio">Node GPIO pin (wiringPi).</param>
 /// <returns>Pointer to the new struct node - discardable.</returns>
-<<<<<<< HEAD
-struct Node *add_node_to_room(const char *room_name, const char *name, NodeType type, int gpio)
-=======
 struct Node *add_node_to_room(const char *room_name, const char *name, NodeType type, uint8_t gpio)
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	struct Room *room;
 	struct Node *node = malloc(sizeof(struct Node));
@@ -217,18 +201,6 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 	{
 		if (new_value < 1)
 		{
-<<<<<<< HEAD
-			return;
-		}
-
-		int r = (new_value >> 16) & 0xff;
-		int g = (new_value >> 8) & 0xff;
-		int b = (new_value) & 0xff;
-
-		softPwmWrite(node->gpio[0], r);
-		softPwmWrite(node->gpio[1], g);
-		softPwmWrite(node->gpio[2], b);
-=======
 			for (uint8_t i = 0; i < sizeof node->gpio; i++)
 			{
 				softPwmWrite(node->gpio[i], 0);
@@ -238,7 +210,6 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 		softPwmWrite(node->gpio[0], (new_value >> 16) & 0xff);
 		softPwmWrite(node->gpio[1], (new_value >> 8) & 0xff);
 		softPwmWrite(node->gpio[2], (new_value) & 0xff);
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 		break;
 	}

@@ -5,21 +5,12 @@
 
 struct Room *rooms; // all rooms in the smart home
 
-<<<<<<< HEAD
-void add_room(const char* name, int thermalGPIO);
-
-void add_node_to_room_handle(const char *room_name, const char *name, NodeType type, int gpio, int mode, void(change_handler)(void));
-
-struct Node *add_node_to_room(const char *room_name, const char *name, NodeType type, int gpio);
-struct Node *add_node_to_room_rgb(const char *room_name, const char *name, int rgb_gpio[3]);
-=======
 void add_room(const char* name, uint8_t thermalGPIO);
 
 void add_node_to_room_handle(const char *room_name, const char *name, NodeType type, uint8_t gpio, int mode, void(change_handler)(void));
 
 struct Node *add_node_to_room(const char *room_name, const char *name, NodeType type, uint8_t gpio);
 struct Node *add_node_to_room_rgb(const char *room_name, const char *name, uint8_t rgb_gpio[3]);
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 struct Node *find_node_from_room(const char *room_name, const char *name);
 void apply_value_to_node(const char *room_name, const char *name, int value);
