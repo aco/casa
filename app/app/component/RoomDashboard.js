@@ -177,7 +177,7 @@ export class RoomDashboard extends React.Component {
     return (
       <SwitchSelect hasPadding
         style={styles.switchSelect}
-        initial={this.state[config.name]}
+        initial={0}
 
         textColor={this.props.theme.accentControl}
         selectedColor='white'
