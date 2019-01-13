@@ -26,17 +26,10 @@
 
 #define	DAYLIGHT_PIN 28
 
-<<<<<<< HEAD
-int is_night_time = NULL;
-
-int server_socket = NULL;
-int active_socket = NULL;
-=======
 bool is_night_time;
 
 int server_socket;
 int active_socket;
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 
 /// <summary>
@@ -50,11 +43,7 @@ void did_detect_motion_signal(void)
 /// <summary>
 /// Interrupt service routine for light sensors. Emits a daylight report to client and adjusts home lighting.
 /// </summary>
-<<<<<<< HEAD
-void did_detect_daylight_change(int *id)
-=======
 void did_detect_daylight_change(void)
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 {
 	int result = digitalRead(DAYLIGHT_PIN);
 
@@ -107,11 +96,7 @@ int arm_sensors(void)
 /// </summary>
 void populate_rooms(void)
 {
-<<<<<<< HEAD
-	int rgb_gpio[3] = { 23, 24, 25 };
-=======
 	uint8_t rgb_gpio[3] = { 23, 24, 25 };
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 	add_room("home", 1);
 	add_node_to_room_handle("home", "main_alarm", NODEALARM, 26, INT_EDGE_RISING, &did_detect_motion_signal);
@@ -193,13 +178,9 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 
 					if (n == 0) // nothing received - close socket
 					{
-<<<<<<< HEAD
-						shutdown_socket(active_socket, &active_fds);
-=======
 						printf("[!] Client %d offline\n", client_socket);
 						shutdown_socket(active_socket, &active_fds);
 
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 						continue;
 					}
 
@@ -266,11 +247,6 @@ void shutdown_socket(int client_socket, fd_set *active_fds)
 {
 	FD_CLR(client_socket, active_fds);
 	close(client_socket);
-<<<<<<< HEAD
-
-	printf("[!] Client %d offline\n", client_socket);
-=======
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 }
 
 /// <summary>

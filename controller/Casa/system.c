@@ -1,9 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-<<<<<<< HEAD
-=======
 #include <string.h>
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 #include <sys/sysinfo.h>
 #include <ifaddrs.h>
 #include <net/if.h>
@@ -44,11 +41,6 @@ cJSON *generate_system_stat_object(const char *key, int value, int upper_bound, 
 int probe_thermal_zone_temperature(void)
 {
 	int temperature;
-<<<<<<< HEAD
-	fscanf(fopen("/sys/class/thermal/thermal_zone0/temp", "r"), "%d", &temperature);
-
-	return temperature / 1000;
-=======
 
 	if (fscanf(fopen("/sys/class/thermal/thermal_zone0/temp", "r"), "%d", &temperature) == 0)
 	{
@@ -56,7 +48,6 @@ int probe_thermal_zone_temperature(void)
 	}
 	
 	return 0;
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 }
 
 /// <summary>

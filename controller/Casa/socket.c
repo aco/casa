@@ -1,9 +1,5 @@
 #include <arpa/inet.h>
 #include <errno.h>
-<<<<<<< HEAD
-#include <fcntl.h>
-=======
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 #include <netinet/in.h>
 #include <signal.h>
 #include <stdio.h>
@@ -13,10 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-<<<<<<< HEAD
-=======
 #include <fcntl.h>
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 #include <sys/select.h>
 
 #define BUFFER_SIZE 1024

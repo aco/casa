@@ -21,13 +21,8 @@ typedef enum
 /// </summary>
 struct Node
 {
-<<<<<<< HEAD
-	unsigned short gpio[3];
-	unsigned short value;
-=======
 	uint8_t gpio[3];
 	uint8_t value;
->>>>>>> 74d36b798d227c747c4e05ccce04a0f342b36110
 
 	char name[32];
 	NodeType type;
