@@ -132,10 +132,8 @@ export default class Home extends React.Component {
     };
 
     this.socket.write({
-      type: COMMAND_TYPE.report,
-      payload: {
-        type: 'batch'
-      }
+      type: COMMAND_TYPE.identification,
+      payload: config.profile
     });
   }
 

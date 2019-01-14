@@ -23,9 +23,6 @@ struct Block
 	uint8_t hash[SHA256_BYTES];
 };
 
-/// <summary>
-/// struct of an individual transaction
-/// </summary>
 struct Transaction
 {
 	char *node;
