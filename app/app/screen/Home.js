@@ -131,9 +131,11 @@ export default class Home extends React.Component {
       });
     };
 
-    this.socket.write({
+    this.socket.write({ // send device identification
       type: COMMAND_TYPE.identification,
-      payload: config.profile
+      payload: {
+        value: config.profile
+      }
     });
   }
 
