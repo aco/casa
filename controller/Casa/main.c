@@ -23,6 +23,7 @@
 #include "system.h"
 #include "command.h"
 #include "blockchain.h"
+#include "profile.h"
 
 #define	DAYLIGHT_PIN 28
 
@@ -30,7 +31,6 @@ bool is_night_time;
 
 int server_socket;
 int active_socket;
-
 
 /// <summary>
 /// Interrupt service routine for PIR sensors.
@@ -68,14 +68,13 @@ void did_detect_daylight_change(void)
 		{
 			apply_value_to_node("home", "porch_light", 40);
 			apply_value_to_node("garage", "entrance_light", 40);
-
 		}
-		else // dawn - douse all lights
+		else // dawn - zero all lights
 		{
 			adjust_all_lighting(0);
 		}
 
-		emit_room_structure_json(active_socket); // reflect new values in client
+		emit_room_structure_json(active_socket); // alert client
 
 		cJSON_Delete(root_object);
 	}
@@ -174,9 +173,8 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 					active_socket = i;
 
 					char *message = NULL;
-					int n = handle_read_descriptor(&message, active_socket);
 
-					if (n == 0) // nothing received - close socket
+					if (handle_read_descriptor(&message, active_socket) == 0) // nothing received - close socket
 					{
 						printf("[!] Client %d offline\n", client_socket);
 						shutdown_socket(active_socket, &active_fds);
@@ -195,14 +193,14 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 						const char *node = cJSON_GetObjectItem(payload_object, "node")->valuestring;
 						const int value = cJSON_GetObjectItem(payload_object, "value")->valueint;
 
-						if (permit_proposed_transaction(node, room, value, active_socket, false))
+						if (record_proposed_transaction_from_client(client_socket, node, room, value, false))
 						{
 							apply_value_to_node(room, node, value);
 							printf("[<] Set %s (%s) to %d\n", node, room, value);
 						}
 						else
 						{
-							printf("[!] Rejected %s (%s) to %d - insufficient permissions (client %d)\n", node, room, value, active_socket);
+							printf("[!] Rejected %s, %s from Client %d - insufficient permissions\n", node, room, active_socket);
 						}
 
 						break;
@@ -210,22 +208,27 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 					case CMDREPORT:
 					{
 						const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
-						const bool is_batch_request = strcmp(report_type, "batch") == 0;
 
-						if (is_batch_request)
-						{
-							puts("[!] Processing batch request");
-						}
-
-						if (is_batch_request || strcmp(report_type, "structure") == 0)
+						if (strcmp(report_type, "structure") == 0)
 						{
 							emit_room_structure_json(active_socket);
 						}
-
-						if (is_batch_request || strcmp(report_type, "system") == 0)
+						else if (strcmp(report_type, "system") == 0)
 						{
 							emit_system_report_json(active_socket);
 						}
+					}
+					case CMDIDENTIFICATION:
+					{
+						const char *identification = cJSON_GetObjectItem(payload_object, "value")->valuestring;
+						bind_client_socket_to_profile(identification, client_socket);
+
+						printf("[+] Client %d assigned to profile \"%s\" - batching home data\n", client_socket, identification);
+
+						emit_room_structure_json(active_socket);
+						emit_system_report_json(active_socket);
+
+						break;
 					}
 					default:
 						break;
@@ -270,13 +273,18 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	if (puts("[~] Building blockchain...") && construct_blockchain() != 0)
+	if (puts("[~] Gathering permissions...") && gather_permissions() != 0)
+	{
+		return -1;
+	}
+
+	if (puts("[~] Formulating blockchain...") && formulate_blockchain() != 0)
 	{
 		return -1;
 	}
 
 	puts("[~] Opening channel...");
-	server_socket = start_server(4045); // atoi(argv[1])
+	server_socket = start_server(4045); // atoi(argv[1]));
 
 	return run_server();
 }

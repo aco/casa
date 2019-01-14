@@ -17,5 +17,9 @@ typedef enum
 	/// <summary>
 	/// A confirmation of receipt.
 	/// </summary>
-	CMDCONFIRMATION = 3
+	CMDCONFIRMATION = 3,
+	/// <summary>
+	/// A client profile identification
+	/// </summary>
+	CMDIDENTIFICATION = 4
 } Command;
