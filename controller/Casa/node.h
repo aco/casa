@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -26,8 +28,6 @@ struct Node
 
 	char name[32];
 	NodeType type;
-
-	void(*change_handler)(void);
 
 	UT_hash_handle hh; // hashable
 };

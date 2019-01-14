@@ -69,6 +69,7 @@
     <ClCompile Include="controller.c" />
     <ClCompile Include="cJSON.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="profile.c" />
     <ClCompile Include="sha256.c" />
     <ClCompile Include="socket.c" />
     <ClCompile Include="system.c" />
@@ -80,6 +81,7 @@
     <ClInclude Include="controller.h" />
     <ClInclude Include="cJSON.h" />
     <ClInclude Include="node.h" />
+    <ClInclude Include="profile.h" />
     <ClInclude Include="room.h" />
     <ClInclude Include="sha256.h" />
     <ClInclude Include="socket.h" />

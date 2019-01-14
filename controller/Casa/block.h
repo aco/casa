@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdint.h>
 
@@ -10,7 +12,7 @@
 /// </summary>
 struct Block
 {
-	int index;
+	uint8_t index;
 	int timestamp;
 
 	struct Block *prev_block;
@@ -29,8 +31,8 @@ struct Transaction
 	char *node;
 	char *room;
 
-	int value;
-	int client_identifier;
+	uint8_t value;
+	int profile_identifier;
 
 	int timestamp;
 };

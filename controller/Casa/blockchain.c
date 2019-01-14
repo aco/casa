@@ -9,6 +9,7 @@
 #include "cJSON.h"
 
 #include "block.h"
+#include "profile.h"
 
 struct Block *lead_block;
 uint8_t current_transaction_count;
@@ -57,28 +58,46 @@ struct Block *build_new_block(const char *data)
 	return block;
 }
 
+/// <summary>
+/// Evaluates a candidate block to succeed the current lead block.
+/// </summary>
+/// <param name="new_block">The candidate block.</param>
 void handle_proposed_block(struct Block *new_block)
 {
 	if ((new_block->index == 0 && new_block->prev_block == NULL) || // appending genesis block
 		(new_block->index == lead_block->index + 1 && new_block->prev_block->hash == lead_block->hash)) // append more recent block
 	{
+		destroy_blockchain(lead_block);
 		lead_block = new_block;
 	}
 	else // discard proposed chain
 	{
-		struct Block *next;
-
-		for (struct Block *curr = lead_block; curr; curr = next)
-		{
-			next = curr->prev_block;
-			free(curr);
-		}
-
-		new_block = NULL;
+		destroy_blockchain(new_block);
 	}
 }
 
-int construct_blockchain(void)
+/// <summary>
+/// Destroys a block and its ancestores.
+/// </summary>
+/// <param name="starting_block">The starting block.</param>
+void destroy_blockchain(struct Block *starting_block)
+{
+	struct Block *next;
+
+	for (struct Block *current = starting_block; current; current = next)
+	{
+		next = current->prev_block;
+		free(current);
+	}
+
+	starting_block = NULL;
+}
+
+/// <summary>
+/// Spawns the genesis block and initialises shared variables.
+/// </summary>
+/// <returns>0 if successful, -1 if chain already existent</returns>
+int formulate_blockchain(void)
 {
 	if (lead_block != NULL)
 	{
@@ -94,16 +113,15 @@ int construct_blockchain(void)
 /// <summary>
 /// Evaluates a proposed transaction against ruleset and records in the current block.
 /// </summary>
-/// <param name="node">Node name.</param>
-/// <param name="room">Room name.</param>
-/// <param name="value">Proposed node value.</param>
-/// <param name="client_identifier">Client identifier.</param>
+/// <param name="profile_identifier">The profile identifier.</param>
+/// <param name="node_name">Name of the node.</param>
+/// <param name="room_name">Name of the room.</param>
 /// <param name="force_wrap">if set to <c>true</c> [force wrap] will seal the current block regardless of remaining transaction space.</param>
-/// <returns></returns>
-bool permit_proposed_transaction(const char *node, const char *room, int value, int client_identifier, bool force_wrap)
+/// <returns>
+///		<c>true</c> if successful.
+/// </returns>
+bool record_proposed_transaction(const char *profile_identifier, const char *node_name, const char *room_name, uint8_t value, bool force_wrap)
 {
-	// TODO: implement ruleset
-
 	if (force_wrap || current_transaction_count == BLOCK_SIZE)
 	{
 		compute_block_hash(lead_block, lead_block->hash);
@@ -118,17 +136,31 @@ bool permit_proposed_transaction(const char *node, const char *room, int value, 
 
 	struct Transaction *transaction = malloc(sizeof(struct Transaction));
 
-	transaction->node = node;
-	transaction->room = room;
+	transaction->node = node_name;
+	transaction->room = room_name;
 	
 	transaction->value = value;
-	transaction->client_identifier = client_identifier;
-
+	transaction->profile_identifier = profile_identifier;
 	transaction->timestamp = time(NULL);
 
 	lead_block->transactions[current_transaction_count++] = transaction;
 
-	return true;
+	return is_transaction_permissible(profile_identifier, room_name, node_name);
+}
+
+bool record_proposed_transaction_from_client(int client_socket_identifier, const char *node_name, const char *room_name, uint8_t value, bool force_wrap)
+{
+	struct Profile *profile, *tmpProfile;
+
+	HASH_ITER(hh, profiles, profile, tmpProfile)
+	{
+		if (profile->client_socket_identifier == client_socket_identifier)
+		{
+			return record_proposed_transaction(profile->identifier, node_name, room_name, value, force_wrap);
+		}
+	}
+
+	return false;
 }
 
 /// <summary>
@@ -137,7 +169,7 @@ bool permit_proposed_transaction(const char *node, const char *room, int value, 
 /// <param name="successor_block_json">The successor block cJSON.</param>
 /// <param name="block">The subject block.</param>
 /// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
-/// <returns></returns>
+/// <returns>JSON represenatation (cJSON) of the chain beginning from the passed block.</returns>
 cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain)
 {
 	cJSON *child_block_object = cJSON_CreateObject();
