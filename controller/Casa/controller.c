@@ -13,6 +13,7 @@
 #include "command.h"
 #include "socket.h"
 #include "room.h"
+#include "profile.h"
 
 struct Room *rooms = NULL;
 
@@ -199,17 +200,13 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 
 	case NODERGB:
 	{
-		if (new_value < 1)
-		{
-			for (uint8_t i = 0; i < sizeof node->gpio; i++)
-			{
-				softPwmWrite(node->gpio[i], 0);
-			}
-		}
+		int r = (new_value >> 16) & 0xff;
+		int g = (new_value >> 8) & 0xff;
+		int b = (new_value) & 0xff;
 
-		softPwmWrite(node->gpio[0], (new_value >> 16) & 0xff);
-		softPwmWrite(node->gpio[1], (new_value >> 8) & 0xff);
-		softPwmWrite(node->gpio[2], (new_value) & 0xff);
+		softPwmWrite(node->gpio[0], r);
+		softPwmWrite(node->gpio[1], g);
+		softPwmWrite(node->gpio[2], b);
 
 		break;
 	}
@@ -275,8 +272,20 @@ void emit_room_structure_json(int dispatch_socket)
 	struct Room *room, *tmpRoom;
 	struct Node *node, *tmpNode;
 
+	struct Profile *profile = find_profile_from_client_socket(dispatch_socket);
+
+	if (profile == NULL)
+	{
+		return;
+	}
+
 	HASH_ITER(hh, rooms, room, tmpRoom)
 	{
+		if (!is_room_accessible(profile, room->name))
+		{
+			continue;
+		}
+
 		cJSON *room_object = cJSON_CreateObject();
 		cJSON *node_array = cJSON_AddArrayToObject(room_object, "nodes");
 
@@ -286,6 +295,11 @@ void emit_room_structure_json(int dispatch_socket)
 
 		HASH_ITER(hh, room->nodes, node, tmpNode)
 		{
+			if (!is_transaction_permissible(profile, room->name, node->name))
+			{
+				continue;
+			}
+
 			cJSON *node_object = cJSON_CreateObject();
 
 			cJSON_AddStringToObject(node_object, "name", node->name);
@@ -297,9 +311,9 @@ void emit_room_structure_json(int dispatch_socket)
 
 		cJSON_AddItemToArray(rooms_array, room_object);
 	}
-
 	cJSON_AddItemToObject(root_object, "payload", payload_object);
 
 	handle_write_descriptor(cJSON_PrintUnformatted(root_object), dispatch_socket);
+
 	puts("[>] Room structure");
 }

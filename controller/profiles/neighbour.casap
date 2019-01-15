@@ -1,0 +1,20 @@
+{
+	"permissions": [{
+		"roomName": "home",
+		"nodes": [
+			"porch_light",
+			"side_lighting"
+		]
+	}, {
+		"roomName": "lounge",
+		"nodes": [
+			"ceiling_light"
+		]
+	}, {
+		"roomName": "garage",
+		"nodes": [
+			"entrance_light",
+			"door"
+		]
+	}]
+}

@@ -64,10 +64,9 @@ struct Block *build_new_block(const char *data)
 /// <param name="new_block">The candidate block.</param>
 void handle_proposed_block(struct Block *new_block)
 {
-	if ((new_block->index == 0 && new_block->prev_block == NULL) || // appending genesis block
+	if ((lead_block == NULL && new_block->index == 0 && new_block->prev_block == NULL) || // appending genesis block
 		(new_block->index == lead_block->index + 1 && new_block->prev_block->hash == lead_block->hash)) // append more recent block
 	{
-		destroy_blockchain(lead_block);
 		lead_block = new_block;
 	}
 	else // discard proposed chain
@@ -87,7 +86,11 @@ void destroy_blockchain(struct Block *starting_block)
 	for (struct Block *current = starting_block; current; current = next)
 	{
 		next = current->prev_block;
-		free(current);
+
+		if (current != NULL)
+		{
+			free(current);
+		}
 	}
 
 	starting_block = NULL;

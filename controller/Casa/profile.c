@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <dirent.h>
+#include <sys/stat.h>
 
 #include "cJSON.h"
 #include "uthash.h"
@@ -29,20 +30,39 @@ bool is_casa_profile_file(const char *d_name)
 }
 
 /// <summary>
+/// Evaluates the subject of a transaction against against a user's permission ruleset, identified by associated socket.
+/// </summary>
+/// <param name="client_socket_identifier">Socket [making the transaction].</param>
+/// <param name="room_name">Name of the room.</param>
+/// <param name="node_name">Name of the node.</param>
+/// <returns>
+///   <c>true</c> if the permission exists for the profile; otherwise, <c>false</c> or if no profile was found.
+/// </returns>
+bool is_transaction_permissible_from_socket(const int client_socket_identifier, const char *room_name, const char *node_name)
+{
+	struct Profile *profile = find_profile_from_client_socket(client_socket_identifier);
+
+	return is_transaction_permissible(profile, room_name, node_name); 
+}
+
+/// <summary>
 /// Evaluates the subject of a transaction against against a user's permission ruleset.
 /// </summary>
-/// <param name="profile_identifier">Profile identifier [making the transaction].</param>
+/// <param name="profile">Profile [making the transaction].</param>
 /// <param name="room_name">Name of the room.</param>
 /// <param name="node_name">Name of the node.</param>
 /// <returns>
 ///   <c>true</c> if the permission exists for the profile; otherwise, <c>false</c>.
 /// </returns>
-bool is_transaction_permissible(const char *profile_identifier, const char *room_name, const char *node_name)
+bool is_transaction_permissible(struct Profile *profile, const char *room_name, const char *node_name)
 {
-	struct Profile *profile;
+	if (profile == NULL)
+	{
+		return false;
+	}
+
 	struct RoomPermission *permission;
 
-	HASH_FIND_STR(profiles, profile_identifier, profile);
 	HASH_FIND_STR(profile->permissions, room_name, permission);
 
 	if (permission == NULL)
@@ -51,7 +71,7 @@ bool is_transaction_permissible(const char *profile_identifier, const char *room
 	}
 
 	for (uint8_t i = 0; i < MAX_SET_SIZE; i++)
-	{ 
+	{
 		if (permission->nodes[i] == NULL) // reached vacant space
 		{
 			break;
@@ -65,13 +85,49 @@ bool is_transaction_permissible(const char *profile_identifier, const char *room
 	return false;
 }
 
+/// <summary>
+/// Determines whether a room is accessible (a permission set exists for the profile.
+/// </summary>
+/// <param name="profile">The profile.</param>
+/// <param name="room_name">Name of the room.</param>
+/// <returns>
+///   <c>true</c> if accessible for the specified profile; otherwise, <c>false</c>.
+/// </returns>
+bool is_room_accessible(struct Profile *profile, const char *room_name)
+{
+	struct RoomPermission *permission;
+	HASH_FIND_STR(profile->permissions, room_name, permission);
+
+	return permission != NULL && permission->nodes[0] != NULL;
+}
+
+struct Profile *find_profile_from_client_socket(const int client_socket_identifier)
+{
+	struct Profile *profile, *tmpProfile;
+
+	HASH_ITER(hh, profiles, profile, tmpProfile)
+	{
+		if (profile->client_socket_identifier == client_socket_identifier)
+		{
+			return profile;
+		}
+	}
+
+	return NULL;
+}
+
+/// <summary>
+/// Associates a socket address with a profile. Can be overwritten.
+/// </summary>
+/// <param name="profile_identifier">The profile name.</param>
+/// <param name="client_socket_identifier">Socket address.</param>
 void bind_client_socket_to_profile(const char *profile_identifier, const int client_socket_identifier)
 {
 	struct Profile *profile;
 
 	HASH_FIND_STR(profiles, profile_identifier, profile);
 
-	if (profile != NULL && profile->client_socket_identifier == NULL)
+	if (profile != NULL)
 	{
 		profile->client_socket_identifier = client_socket_identifier;
 	}
@@ -110,8 +166,6 @@ int gather_permissions(void)
 	struct dirent *dir;
 	FILE *profile_file;
 
-	uint8_t profile_count;
-
 	while ((dir = readdir(directory)) != NULL)
 	{
 		if (!is_casa_profile_file(dir->d_name))
@@ -130,6 +184,10 @@ int gather_permissions(void)
 		{
 			printf("[!] Unable to read profile at %s\n", profile_path);
 			continue;
+		}
+		else // set permissions to read-only for all tiers
+		{
+			chmod(profile_path, S_IRUSR);
 		}
 
 		char *profile_data = calloc(1, 1);
@@ -150,7 +208,6 @@ int gather_permissions(void)
 		cJSON *permissions = cJSON_GetObjectItem(profile_json, "permissions");
 
 		cJSON *permission_json_object = NULL;
-		uint8_t permission_count = 0;
 
 		cJSON_ArrayForEach(permission_json_object, permissions)
 		{
@@ -163,6 +220,16 @@ int gather_permissions(void)
 
 			for (uint8_t i = 0; i < cJSON_GetArraySize(node_array_json); i++)
 			{
+				const char *node_name = cJSON_GetArrayItem(node_array_json, i)->valuestring;
+
+				for (uint8_t j = 0; j < i; j++) // ensure node identifier is distinct
+				{
+					if (strcmp(permission->nodes[j], node_name) == 0)
+					{
+						return -1;
+					}
+				}
+
 				permission->nodes[i] = cJSON_GetArrayItem(node_array_json, i)->valuestring;
 			}
 

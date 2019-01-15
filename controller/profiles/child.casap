@@ -1,0 +1,19 @@
+{
+	"permissions": [{
+		"roomName": "home",
+		"nodes": [
+			"central_heating"
+		]
+	}, {
+		"roomName": "lounge",
+		"nodes": [
+			"ceiling_light",
+			"fireplace"
+		]
+	}, {
+		"roomName": "bedroom",
+		"nodes": [
+			"ceiling_light"
+		]
+	}]
+}

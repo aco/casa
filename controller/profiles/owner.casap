@@ -1,0 +1,33 @@
+{
+	"permissions": [{
+		"roomName": "home",
+		"nodes": [
+			"main_alarm",
+			"porch_light",
+			"side_lighting",
+			"central_heating"
+		]
+	}, {
+		"roomName": "lounge",
+		"nodes": [
+			"ceiling_light",
+			"fireplace"
+		]
+	}, {
+		"roomName": "kitchen",
+		"nodes": [
+			"ceiling_light"
+		]
+	}, {
+		"roomName": "bedroom",
+		"nodes": [
+			"ceiling_light"
+		]
+	}, {
+		"roomName": "garage",
+		"nodes": [
+			"entrance_light",
+			"door"
+		]
+	}]
+}

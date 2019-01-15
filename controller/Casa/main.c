@@ -101,7 +101,7 @@ void populate_rooms(void)
 	add_node_to_room_handle("home", "main_alarm", NODEALARM, 26, INT_EDGE_RISING, &did_detect_motion_signal);
 
 	add_node_to_room("home", "porch_light", NODELIGHT, 7);
-	add_node_to_room_rgb("home", "side lighting", rgb_gpio);
+	add_node_to_room_rgb("home", "side_lighting", rgb_gpio);
 	add_node_to_room("home", "central_heating", NODETEMPERATURE, 12);
 
 	add_room("lounge", 1);
@@ -116,6 +116,7 @@ void populate_rooms(void)
 
 	add_room("garage", 1);
 	add_node_to_room("garage", "entrance_light", NODELIGHT, 3);
+	add_node_to_room("garage", "door", NODEDOOR, 1);
 }
 
 /// <summary>

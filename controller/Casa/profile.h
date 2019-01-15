@@ -35,8 +35,13 @@ struct Profile
 };
 
 bool is_casa_profile_file(const char *d_name);
-bool is_transaction_permissible(const char *profile_identifier, const char *room_name, const char *node_name);
 
+bool is_transaction_permissible_from_socket(const int client_socket_identifier, const char *room_name, const char *node_name);
+bool is_transaction_permissible(struct Profile *profile, const char *room_name, const char *node_name);
+
+bool is_room_accessible(struct Profile *profile, const char *room_name);
+
+struct Profile *find_profile_from_client_socket(const int client_socket_identifier);
 void bind_client_socket_to_profile(const char *profile_identifier, const int client_socket_identifier);
 
 char *profile_identifier_from_directory(const char *d_name);
