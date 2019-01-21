@@ -7,7 +7,7 @@
 #include "cJSON.h"
 
 void compute_block_hash(struct Block *block, uint8_t *hash_dest);
-struct Block *build_new_block(const char *data);
+struct Block *build_new_block(void);
 
 void handle_proposed_block(struct Block *new_block);
 

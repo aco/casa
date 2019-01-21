@@ -24,17 +24,19 @@ void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 	char hash_buffer[SHA256_BYTES * 2];
 
 	int timestamp_sum = 0;
+	int transaction_count = 0;
 
 	for (uint8_t i = 0; i < BLOCK_SIZE; i++)
 	{
 		if (block->transactions[i] != NULL)
 		{
+			transaction_count++;
 			timestamp_sum += block->transactions[i]->timestamp + block->transactions[i]->value;
 		}
 	}
 
-	snprintf(hash_buffer, sizeof(hash_buffer), "%s.%d.%d.%d", block->data, block->index,
-		timestamp_sum / block->timestamp); // concatenate block data, index and transaction cumulitive timestamp / block timestamp
+	snprintf(hash_buffer, sizeof(hash_buffer), "%d.ca.%d.sa.%d", block->index, transaction_count, 
+		timestamp_sum / block->timestamp ); // concatenate block data, index and transaction cumulitive timestamp / block timestamp
 
 	sha256(hash_buffer, strlen(hash_buffer), hash_dest);
 }
@@ -42,9 +44,7 @@ void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 /// <summary>
 /// Computes the block hash using a combination of properties as the seed.
 /// </summary>
-/// <param name="block">Subject block.</param>
-/// <param name="hash_dest">Destination for computed hash.</param>
-struct Block *build_new_block(const char *data)
+struct Block *build_new_block(void)
 {
 	struct Block *block = malloc(sizeof(struct Block));
 
@@ -52,8 +52,6 @@ struct Block *build_new_block(const char *data)
 
 	block->index = lead_block == NULL ? 0 : lead_block->index + 1;
 	block->prev_block = lead_block;
-
-	strcpy(block->data, data);
 
 	return block;
 }
@@ -108,7 +106,7 @@ int formulate_blockchain(void)
 	}
 
 	current_transaction_count = 0;
-	handle_proposed_block(build_new_block("casa genesis block"));
+	handle_proposed_block(build_new_block());
 
 	return 0;
 }
@@ -131,7 +129,7 @@ bool record_proposed_transaction(const char *profile_identifier, const char *nod
 
 		printf("[~] Sealing block #%d at %d%% capacity\n", lead_block->index, (current_transaction_count * 100) / BLOCK_SIZE);
 
-		struct Block *new_block = build_new_block("test");
+		struct Block *new_block = build_new_block();
 
 		handle_proposed_block(new_block);
 		current_transaction_count = 0;
@@ -143,12 +141,14 @@ bool record_proposed_transaction(const char *profile_identifier, const char *nod
 	transaction->room = room_name;
 	
 	transaction->value = value;
+
 	transaction->profile_identifier = profile_identifier;
 	transaction->timestamp = time(NULL);
+	transaction->authorized = is_transaction_permissible(profile_identifier, room_name, node_name);
 
 	lead_block->transactions[current_transaction_count++] = transaction;
 
-	return is_transaction_permissible(profile_identifier, room_name, node_name);
+	return transaction->authorized;
 }
 
 bool record_proposed_transaction_from_client(int client_socket_identifier, const char *node_name, const char *room_name, uint8_t value, bool force_wrap)
@@ -178,7 +178,6 @@ cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool e
 	cJSON *child_block_object = cJSON_CreateObject();
 	cJSON *subject_block_object = block == lead_block ? successor_block_json : child_block_object; // lead block will be a blank cJSON object
 
-	cJSON_AddStringToObject(subject_block_object, "data", block->data);
 	cJSON_AddNumberToObject(subject_block_object, "index", block->index);
 	cJSON_AddNumberToObject(subject_block_object, "timestamp", block->timestamp);
 

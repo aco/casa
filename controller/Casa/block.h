@@ -2,13 +2,14 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "sha256.h"
 
 #define BLOCK_SIZE 4
 
 /// <summary>
-/// struct of a blockchain block
+/// struct of a blockchain block.
 /// </summary>
 struct Block
 {
@@ -16,20 +17,22 @@ struct Block
 	int timestamp;
 
 	struct Block *prev_block;
-
-	char data[256];
 	struct Transaction *transactions[BLOCK_SIZE];
 
 	uint8_t hash[SHA256_BYTES];
 };
 
+/// <summary>
+/// struct of a block transaction.
+/// </summary>
 struct Transaction
 {
 	char *node;
 	char *room;
 
 	uint8_t value;
-	int profile_identifier;
 
+	int profile_identifier;
 	int timestamp;
+	bool authorized;
 };

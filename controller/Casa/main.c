@@ -68,10 +68,13 @@ void did_detect_daylight_change(void)
 		{
 			apply_value_to_node("home", "porch_light", 40);
 			apply_value_to_node("garage", "entrance_light", 40);
+
+			puts("[~] Set exterior lighting to 40%");
 		}
 		else // dawn - zero all lights
 		{
 			adjust_all_lighting(0);
+			puts("[~] Dim all lighting to 0%");
 		}
 
 		emit_room_structure_json(active_socket); // alert client
@@ -154,7 +157,7 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 
 					if (client_socket == -1)
 					{
-						perror("[-] accept");
+						perror("[x] accept");
 						continue;
 					}
 					else
@@ -177,7 +180,7 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 
 					if (handle_read_descriptor(&message, active_socket) == 0) // nothing received - close socket
 					{
-						printf("[!] Client %d offline\n", client_socket);
+						printf("[-] Client %d offline\n", client_socket);
 						shutdown_socket(active_socket, &active_fds);
 
 						continue;
@@ -224,7 +227,7 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 						const char *identification = cJSON_GetObjectItem(payload_object, "value")->valuestring;
 						bind_client_socket_to_profile(identification, client_socket);
 
-						printf("[+] Client %d assigned to profile \"%s\" - batching home data\n", client_socket, identification);
+						printf("[~] Client %d assigned profile \"%s\" - batching home data\n", client_socket, identification);
 
 						emit_room_structure_json(active_socket);
 						emit_system_report_json(active_socket);
@@ -261,7 +264,17 @@ void shutdown_socket(int client_socket, fd_set *active_fds)
 /// <returns></returns>
 int main(int argc, char *argv[])
 {
-	if (puts("Casa 1.0\n\n[~] Initialising GPIO pins...") && wiringPiSetup() != 0)
+	puts("\
+         @@@@@@        %@@@@@@@  @&         @@@@@@#         ,@@@@@@@  @&\n\
+     @@@@@@@@@     %@@@@@@@@@@@@@@@      @@@@@@@         @@@@@@@@@@@@@@@\n\
+  &@@@@ / @@@    @@@@@    *@@@@@@        @@@@@&       @@@@@.    @@@@@@.\n\
+@@@@@           @@@@@     @@@@@&      @@@     @@@@   @@@@      @@@@@@       /@@\n\
+@@@@        /@@@@@@&     @@@@@@@     @@@@     &@@@@.@@@@     %@@@@@@&     %@@@\n\
+@@@@.     @@@@@@@@/   .@@@@ @@@@( @@@@@@       @@@@@%@@@@@  @@@@ @@@@@ (@@@@\n\
+@@@@@@@@@@@@/  *@@@@@@@@@   @@@@@@@@*@@@@@@@@@@@@@%  @@@@@@@@@,  @@@@@@@@&\n\
+ @@@@@@@@@/     *@@@@@@@     @@@@@@/   *@@@@@@@@@/    @@@@@@      @@@@@@&\n\n");
+
+	if (puts("[~] Initialising GPIO pins...") && wiringPiSetup() != 0)
 	{
 		return -1;
 	}

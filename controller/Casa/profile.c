@@ -182,7 +182,7 @@ int gather_permissions(void)
 
 		if (profile_file == NULL)
 		{
-			printf("[!] Unable to read profile at %s\n", profile_path);
+			printf("[x] Unable to read profile at %s\n", profile_path);
 			continue;
 		}
 		else // set permissions to read-only for all tiers

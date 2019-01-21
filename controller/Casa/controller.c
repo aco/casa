@@ -64,7 +64,7 @@ void add_node_to_room_handle(const char *room_name, const char *name, NodeType t
 
 	if (wiringPiISR(gpio, mode, change_handler) < 0)
 	{
-		fprintf(stderr, "[!] ISR failure: %s\n", strerror(errno));
+		fprintf(stderr, "[x] ISR failure: %s\n", strerror(errno));
 	}
 }
 
