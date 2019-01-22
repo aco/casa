@@ -114,7 +114,7 @@ export default class Home extends React.Component {
             
             break;
           default:
-            console.log('Received data without corresponding process block', data);
+            console.log('Received data without matching process block', data);
             break;
         }
       } catch (error) {
