@@ -13,11 +13,9 @@
     "npm": "^6.4.1",
     "react": "16.5.0",
     "react-native": "0.57.0",
-    "react-native-animated-entrance": "^1.0.0",
+    "react-native-animated-entrance": "^1.0.3",
     "react-native-linear-gradient": "^2.4.2",
-    "react-native-notifications": "^1.1.20",
-    "react-native-svg": "^7.0.3",
-    "sjcl": "^1.0.8"
+    "react-native-svg": "^7.0.3"
   },
   "devDependencies": {
     "babel-jest": "23.6.0",

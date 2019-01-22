@@ -21,7 +21,7 @@ import {
 
 import {
   TCPSocket
-} from '../provider';
+} from '../bridge';
 
 import {
   COMMAND_TYPE
@@ -36,11 +36,6 @@ import Images from '../asset/img';
 import THEME from '../constant/theme';
 
 import LinearGradient from 'react-native-linear-gradient';
-
-import NotificationsIOS, {
-  NotificationAction,
-  NotificationCategory
-} from 'react-native-notifications';
 
 export default class Home extends React.Component {
 
@@ -111,7 +106,6 @@ export default class Home extends React.Component {
                   theme: json.payload.value === true ? 'dark' : 'light'
                 });
 
-
                 break;
             
               default:
@@ -120,6 +114,7 @@ export default class Home extends React.Component {
             
             break;
           default:
+            console.log('Received data without corresponding process block', data);
             break;
         }
       } catch (error) {

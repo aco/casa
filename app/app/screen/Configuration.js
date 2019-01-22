@@ -16,7 +16,7 @@ const default_port = 4045;
 
 import {
   DeviceCheck
-} from '../provider';
+} from '../bridge';
 
 import {
   SwitchSelect
