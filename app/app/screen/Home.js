@@ -12,7 +12,8 @@ import {
   ParallaxHeader,
   RoomDashboard,
   TabSlider,
-  HomeDashboard
+  HomeDashboard,
+  DemoControls
 } from '../component';
 
 import {
@@ -157,7 +158,7 @@ export default class Home extends React.Component {
     return true;
   }
 
-  render() {
+  render = () => {
     const homeTabActive = this.state.activeRoomIndex === 0;
     const tabSliderBody = this.state.rooms.length === 0 ? [(
       <Configuration
@@ -197,13 +198,21 @@ export default class Home extends React.Component {
         scrollEnabled={this.state.scrollEnabled}
         backgroundImage={Images.Headers[homeTabActive ? this.state.theme : this.state.rooms[this.state.activeRoomIndex - 1].name] || 0}
         backgroundGradientColors={THEME[this.state.theme].backgroundColors}
-      > 
+      >
         <TabSlider fixed
           tabIndexChanged={this.tabIndexChanged}
           theme={THEME[this.state.theme]}
         >
           {tabSliderBody}
         </TabSlider>
+
+        {
+          (__DEV__ && this.state.rooms.length > 0) &&
+          <DemoControls
+            dispatchSocket={this.socket}
+            theme={THEME[this.state.theme]}
+          />
+        }
       </ParallaxHeader>
     );
   }

@@ -3,7 +3,8 @@ export const COMMAND_TYPE = {
   report: 1,
   notification: 2,
   confirmation: 3,
-  identification: 4
+  identification: 4,
+  demo: 5
 }
 
 export const NODE_TYPE = {
