@@ -14,13 +14,6 @@
 
 #define MAX_PROFILE_CHAR 1024
 
-/// <summary>
-/// Determines whether a file bears the Casa profile extension.
-/// </summary>
-/// <param name="d_name">Directory target.</param>
-/// <returns>
-///   <c>true</c> if the file ends with the Casa profile extension.
-/// </returns>
 bool is_casa_profile_file(const char *d_name)
 {
 	const size_t ext_len = strlen(PROFILE_EXTENSION);
@@ -29,15 +22,6 @@ bool is_casa_profile_file(const char *d_name)
 	return strcmp(d_name + (str_len - ext_len), PROFILE_EXTENSION) == 0;
 }
 
-/// <summary>
-/// Evaluates the subject of a transaction against against a user's permission ruleset, identified by associated socket.
-/// </summary>
-/// <param name="client_socket_identifier">Socket [making the transaction].</param>
-/// <param name="room_name">Name of the room.</param>
-/// <param name="node_name">Name of the node.</param>
-/// <returns>
-///   <c>true</c> if the permission exists for the profile; otherwise, <c>false</c> or if no profile was found.
-/// </returns>
 bool is_transaction_permissible_from_socket(const int client_socket_identifier, const char *room_name, const char *node_name)
 {
 	struct Profile *profile = find_profile_from_client_socket(client_socket_identifier);
@@ -45,15 +29,6 @@ bool is_transaction_permissible_from_socket(const int client_socket_identifier, 
 	return is_transaction_permissible(profile, room_name, node_name); 
 }
 
-/// <summary>
-/// Evaluates the subject of a transaction against against a user's permission ruleset.
-/// </summary>
-/// <param name="profile">Profile [making the transaction].</param>
-/// <param name="room_name">Name of the room.</param>
-/// <param name="node_name">Name of the node.</param>
-/// <returns>
-///   <c>true</c> if the permission exists for the profile; otherwise, <c>false</c>.
-/// </returns>
 bool is_transaction_permissible(struct Profile *profile, const char *room_name, const char *node_name)
 {
 	if (profile == NULL)
@@ -85,14 +60,6 @@ bool is_transaction_permissible(struct Profile *profile, const char *room_name, 
 	return false;
 }
 
-/// <summary>
-/// Determines whether a room is accessible (a permission set exists for the profile.
-/// </summary>
-/// <param name="profile">The profile.</param>
-/// <param name="room_name">Name of the room.</param>
-/// <returns>
-///   <c>true</c> if accessible for the specified profile; otherwise, <c>false</c>.
-/// </returns>
 bool is_room_accessible(struct Profile *profile, const char *room_name)
 {
 	struct RoomPermission *permission;
@@ -116,11 +83,6 @@ struct Profile *find_profile_from_client_socket(const int client_socket_identifi
 	return NULL;
 }
 
-/// <summary>
-/// Associates a socket address with a profile. Can be overwritten.
-/// </summary>
-/// <param name="profile_identifier">The profile name.</param>
-/// <param name="client_socket_identifier">Socket address.</param>
 void bind_client_socket_to_profile(const char *profile_identifier, const int client_socket_identifier)
 {
 	struct Profile *profile;
@@ -133,11 +95,6 @@ void bind_client_socket_to_profile(const char *profile_identifier, const int cli
 	}
 }
 
-/// <summary>
-/// Extracts the profile name from the directory target.
-/// </summary>
-/// <param name="d_name">Directory target.</param>
-/// <returns>Profile name.</returns>
 char *profile_identifier_from_directory(const char *d_name)
 {
 	const size_t ext_len = strlen(PROFILE_EXTENSION);
@@ -151,9 +108,6 @@ char *profile_identifier_from_directory(const char *d_name)
 	return file_name_extless;
 }
 
-/// <summary>
-/// Loads permissioning system with profiles from disk.
-/// </summary>
 int gather_permissions(void)
 {
 	DIR *directory;

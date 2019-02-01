@@ -14,11 +14,6 @@
 struct Block *lead_block;
 uint8_t current_transaction_count;
 
-/// <summary>
-/// Computes the block hash using a combination of properties as the seed.
-/// </summary>
-/// <param name="block">Subject block.</param>
-/// <param name="hash_dest">Destination for computed hash.</param>
 void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 {
 	char hash_buffer[SHA256_BYTES * 2];
@@ -41,9 +36,6 @@ void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 	sha256(hash_buffer, strlen(hash_buffer), hash_dest);
 }
 
-/// <summary>
-/// Computes the block hash using a combination of properties as the seed.
-/// </summary>
 struct Block *build_new_block(void)
 {
 	struct Block *block = malloc(sizeof(struct Block));
@@ -56,10 +48,6 @@ struct Block *build_new_block(void)
 	return block;
 }
 
-/// <summary>
-/// Evaluates a candidate block to succeed the current lead block.
-/// </summary>
-/// <param name="new_block">The candidate block.</param>
 void handle_proposed_block(struct Block *new_block)
 {
 	if ((lead_block == NULL && new_block->index == 0 && new_block->prev_block == NULL) || // appending genesis block
@@ -73,10 +61,6 @@ void handle_proposed_block(struct Block *new_block)
 	}
 }
 
-/// <summary>
-/// Destroys a block and its ancestores.
-/// </summary>
-/// <param name="starting_block">The starting block.</param>
 void destroy_blockchain(struct Block *starting_block)
 {
 	struct Block *next;
@@ -94,10 +78,6 @@ void destroy_blockchain(struct Block *starting_block)
 	starting_block = NULL;
 }
 
-/// <summary>
-/// Spawns the genesis block and initialises shared variables.
-/// </summary>
-/// <returns>0 if successful, -1 if chain already existent</returns>
 int formulate_blockchain(void)
 {
 	if (lead_block != NULL)
@@ -111,16 +91,6 @@ int formulate_blockchain(void)
 	return 0;
 }
 
-/// <summary>
-/// Evaluates a proposed transaction against ruleset and records in the current block.
-/// </summary>
-/// <param name="profile_identifier">The profile identifier.</param>
-/// <param name="node_name">Name of the node.</param>
-/// <param name="room_name">Name of the room.</param>
-/// <param name="force_wrap">if set to <c>true</c> [force wrap] will seal the current block regardless of remaining transaction space.</param>
-/// <returns>
-///		<c>true</c> if successful.
-/// </returns>
 bool record_proposed_transaction(const char *profile_identifier, const char *node_name, const char *room_name, uint8_t value, bool force_wrap)
 {
 	if (force_wrap || current_transaction_count == BLOCK_SIZE)
@@ -166,13 +136,6 @@ bool record_proposed_transaction_from_client(int client_socket_identifier, const
 	return false;
 }
 
-/// <summary>
-/// Builds a JSON representation of the blockchain to a socket.
-/// </summary>
-/// <param name="successor_block_json">The successor block cJSON.</param>
-/// <param name="block">The subject block.</param>
-/// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
-/// <returns>JSON represenatation (cJSON) of the chain beginning from the passed block.</returns>
 cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain)
 {
 	cJSON *child_block_object = cJSON_CreateObject();
@@ -202,11 +165,6 @@ cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool e
 	}
 }
 
-/// <summary>
-/// Builds and emits a JSON representation of the room structure to a socket.
-/// </summary>
-/// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
-/// <param name="dispatch_socket">Client socket to dispatch.</param>
 void emit_block_json(bool entire_chain, int dispatch_socket)
 {
 	cJSON *root_block = cJSON_CreateObject();

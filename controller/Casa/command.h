@@ -1,5 +1,8 @@
 #pragma once
 
+/// <summary>
+/// Messages classifications.
+/// </summary>
 typedef enum
 {
 	/// <summary>

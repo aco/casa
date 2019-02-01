@@ -14,12 +14,6 @@
 
 #define BUFFER_SIZE 1024
 
-/// <summary>
-/// Handles the reading of a socket's file descriptor
-/// </summary>
-/// <param name="message">Output eference to a message buffer.</param>
-/// <param name="readfd">File descriptor.</param>
-/// <returns>Buffer size of message.</returns>
 int handle_read_descriptor(char **message, int readfd)
 {
 	*message = (char *)malloc(BUFFER_SIZE * sizeof(char));
@@ -36,11 +30,6 @@ int handle_read_descriptor(char **message, int readfd)
 	return bytes;
 }
 
-/// <summary>
-/// Writes a given message to a socket file descriptor
-/// </summary>
-/// <param name="message">Message to write.</param>
-/// <param name="client_socket">Destination socket.</param>
 void handle_write_descriptor(const char *message, int client_socket)
 {
 	int buffer_length = strlen(message);
@@ -53,11 +42,6 @@ void handle_write_descriptor(const char *message, int client_socket)
 	send(client_socket, &buffer, buffer_length, 0);
 }
 
-/// <summary>
-/// Opens a TCP socket through a given port.
-/// </summary>
-/// <param name="server_port">Port.</param>
-/// <returns>Server socket identifier.</returns>
 int start_server(int server_port)
 {
 	struct sockaddr_in server_addrin;
