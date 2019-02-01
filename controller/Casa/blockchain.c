@@ -12,7 +12,6 @@
 #include "profile.h"
 
 struct Block *lead_block;
-uint8_t current_transaction_count;
 
 void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 {
@@ -21,7 +20,7 @@ void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 	int timestamp_sum = 0;
 	int transaction_count = 0;
 
-	for (uint8_t i = 0; i < BLOCK_SIZE; i++)
+	for (uint8_t i = 0; i < block->occupied_capacity; i++)
 	{
 		if (block->transactions[i] != NULL)
 		{
@@ -31,7 +30,7 @@ void compute_block_hash(struct Block *block, uint8_t *hash_dest)
 	}
 
 	snprintf(hash_buffer, sizeof(hash_buffer), "%d.ca.%d.sa.%d", block->index, transaction_count, 
-		timestamp_sum / block->timestamp ); // concatenate block data, index and transaction cumulitive timestamp / block timestamp
+		timestamp_sum / block->timestamp ); // concatenate block data, index and transaction cumulitive timestamp / block timestamp  
 
 	sha256(hash_buffer, strlen(hash_buffer), hash_dest);
 }
@@ -44,6 +43,7 @@ struct Block *build_new_block(void)
 
 	block->index = lead_block == NULL ? 0 : lead_block->index + 1;
 	block->prev_block = lead_block;
+	block->occupied_capacity = 0;
 
 	return block;
 }
@@ -85,7 +85,6 @@ int formulate_blockchain(void)
 		return -1;
 	}
 
-	current_transaction_count = 0;
 	handle_proposed_block(build_new_block());
 
 	return 0;
@@ -93,30 +92,28 @@ int formulate_blockchain(void)
 
 bool record_proposed_transaction(const char *profile_identifier, const char *node_name, const char *room_name, uint8_t value, bool force_wrap)
 {
-	if (force_wrap || current_transaction_count == BLOCK_SIZE)
+	if (force_wrap || lead_block->occupied_capacity == BLOCK_SIZE)
 	{
 		compute_block_hash(lead_block, lead_block->hash);
 
-		printf("[~] Sealing block #%d at %d%% capacity\n", lead_block->index, (current_transaction_count * 100) / BLOCK_SIZE);
+		printf("[~] Sealing block #%d at %d%% capacity\n", lead_block->index, (lead_block->occupied_capacity * 100) / BLOCK_SIZE);
 
 		struct Block *new_block = build_new_block();
 
 		handle_proposed_block(new_block);
-		current_transaction_count = 0;
 	}
 
 	struct Transaction *transaction = malloc(sizeof(struct Transaction));
 
-	transaction->node = node_name;
-	transaction->room = room_name;
+	strcpy(transaction->room, node_name);
+	strcpy(transaction->node, room_name);
+	strcpy(transaction->profile_identifier, profile_identifier);
 	
 	transaction->value = value;
-
-	transaction->profile_identifier = profile_identifier;
 	transaction->timestamp = time(NULL);
 	transaction->authorized = is_transaction_permissible(profile_identifier, room_name, node_name);
 
-	lead_block->transactions[current_transaction_count++] = transaction;
+	lead_block->transactions[lead_block->occupied_capacity++] = transaction;
 
 	return transaction->authorized;
 }
@@ -136,7 +133,35 @@ bool record_proposed_transaction_from_client(int client_socket_identifier, const
 	return false;
 }
 
-cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain)
+cJSON *build_block_transactions_json(struct Block *block)
+{
+	cJSON *transaction_array = cJSON_CreateArray();
+
+	for (uint8_t i = 0; i < block->occupied_capacity; i++)
+	{
+		if (block->transactions[i] == NULL)
+		{
+			break;
+		}
+
+		cJSON *transaction_object = cJSON_CreateObject();
+
+		cJSON_AddStringToObject(transaction_object, "node", block->transactions[i]->node);
+		cJSON_AddStringToObject(transaction_object, "room", block->transactions[i]->room);
+		cJSON_AddNumberToObject(transaction_object, "value", block->transactions[i]->value);
+
+		cJSON_AddNumberToObject(transaction_object, "timestamp", block->transactions[i]->timestamp);
+		cJSON_AddBoolToObject(transaction_object, "authorized", block->transactions[i]->authorized);
+
+		cJSON_AddStringToObject(transaction_object, "profile", block->transactions[i]->profile_identifier);
+
+		cJSON_AddItemToArray(transaction_array, transaction_object);
+	}
+
+	return transaction_array;
+}
+
+cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain, bool include_transactions)
 {
 	cJSON *child_block_object = cJSON_CreateObject();
 	cJSON *subject_block_object = block == lead_block ? successor_block_json : child_block_object; // lead block will be a blank cJSON object
@@ -155,9 +180,14 @@ cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool e
 	cJSON_AddStringToObject(subject_block_object, "hash", hash_digest_buffer);
 	cJSON_AddItemToObject(successor_block_json, "prevBlock", child_block_object);
 
+	if (include_transactions)
+	{
+		cJSON_AddItemToObject(subject_block_object, "transactions", build_block_transactions_json(block));
+	}
+
 	if (entire_chain && block->prev_block != NULL)
 	{
-		return build_block_json(child_block_object, block->prev_block, entire_chain);
+		return build_block_json(child_block_object, block->prev_block, entire_chain, include_transactions);
 	}
 	else
 	{
@@ -165,13 +195,13 @@ cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool e
 	}
 }
 
-void emit_block_json(bool entire_chain, int dispatch_socket)
+void emit_block_json(bool entire_chain, bool include_transactions)
 {
 	cJSON *root_block = cJSON_CreateObject();
 	cJSON *root_object = cJSON_CreateObject();
 	cJSON *payload_object = cJSON_CreateObject();
 
-	build_block_json(root_block, lead_block, entire_chain);
+	build_block_json(root_block, lead_block, entire_chain, include_transactions);
 	cJSON_AddItemToObject(payload_object, "leadBlock", root_block);
 
 	cJSON_AddNumberToObject(root_object, "type", 3);

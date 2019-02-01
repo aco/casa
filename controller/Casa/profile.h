@@ -26,7 +26,7 @@ struct RoomPermission
 /// </summary>
 struct Profile
 {
-	char identifier[16];
+	char identifier[MAX_SET_SIZE];
 	uint8_t client_socket_identifier;
 
 	struct RoomPermission *permissions;

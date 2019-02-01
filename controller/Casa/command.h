@@ -22,7 +22,11 @@ typedef enum
 	/// </summary>
 	CMDCONFIRMATION = 3,
 	/// <summary>
-	/// A client profile identification
+	/// A client profile identification.
 	/// </summary>
-	CMDIDENTIFICATION = 4
+	CMDIDENTIFICATION = 4,
+	/// <summary>
+	/// An action for demonstration purposes.
+	/// </summary>
+	CMDDEMO = 5
 } Command;

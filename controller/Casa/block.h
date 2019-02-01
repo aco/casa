@@ -14,6 +14,8 @@
 struct Block
 {
 	uint8_t index;
+	uint8_t occupied_capacity;
+
 	int timestamp;
 
 	struct Block *prev_block;
@@ -27,12 +29,12 @@ struct Block
 /// </summary>
 struct Transaction
 {
-	char *node;
-	char *room;
+	char *node[32];
+	char *room[32];
+	char *profile_identifier[32];
 
 	uint8_t value;
-
-	int profile_identifier;
-	int timestamp;
 	bool authorized;
+
+	int timestamp;
 };

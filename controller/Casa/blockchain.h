@@ -13,7 +13,6 @@
 /// <param name="hash_dest">Destination for computed hash.</param>
 void compute_block_hash(struct Block *block, uint8_t *hash_dest);
 
-
 /// <summary>
 /// Builds a new block from the lead block
 /// </summary>
@@ -59,17 +58,25 @@ void destroy_blockchain(struct Block *starting_block);
 int formulate_blockchain(void);
 
 /// <summary>
+/// Builds a JSON representation of a block's transactions (if any).
+/// </summary>
+/// <param name="block">The subject block.</param>
+/// <returns>cJSON array object.</returns>
+cJSON *build_block_transactions_json(struct Block *block);
+
+/// <summary>
 /// Builds a JSON representation of the chain beginning from the specified block.
 /// </summary>
 /// <param name="successor_block_json">The successor block json.</param>
 /// <param name="block">The next block to serialize.</param>
 /// <param name="entire_chain">if set to <c>true</c>, continues down to the genesis block.</param>
+/// <param name="include_transactions">if set to <c>true</c>, serialises all transactions in the block.</param>
 /// <returns></returns>
-cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain);
+cJSON *build_block_json(cJSON *successor_block_json, struct Block *block, bool entire_chain, bool include_transactions);
 
 /// <summary>
 /// Builds and emits a JSON representation of the room structure to a socket.
 /// </summary>
 /// <param name="entire_chain">if set to <c>true</c> [entire chain] cascades through all ancestor blocks.</param>
-/// <param name="dispatch_socket">Client socket to dispatch.</param>
-void emit_block_json(bool entire_chain, int dispatch_socket);
+/// <param name="include_transactions">if set to <c>true</c>, serialises all transactions in the block.</param>
+void emit_block_json(bool entire_chain, bool include_transactions);

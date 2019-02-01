@@ -113,6 +113,7 @@ void populate_rooms(void)
 
 	add_room("kitchen", 1);
 	add_node_to_room("kitchen", "ceiling_light", NODELIGHT, 2);
+	add_node_to_room("kitchen", "stove", NODELIGHT, 16); // dummy appliance used to demo rejected transactions
 
 	add_room("bedroom", 1);
 	add_node_to_room("bedroom", "ceiling_light", NODELIGHT, 5);
@@ -234,6 +235,18 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 
 						break;
 					}
+					case CMDDEMO:
+					{
+						const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
+
+						if (strcmp(report_type, "blockchain") == 0)
+						{
+							emit_block_json(true, true);
+						}
+
+						break;
+					}
+					case CMDCONFIRMATION:
 					default:
 						break;
 					}
@@ -296,7 +309,7 @@ int main(int argc, char *argv[])
 	{
 		return -1;
 	}
-
+	
 	puts("[~] Opening channel...");
 	server_socket = start_server(4045); // atoi(argv[1]));
 
