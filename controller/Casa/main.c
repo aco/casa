@@ -18,6 +18,7 @@
 
 #include "cJSON.h"
 
+#include "main.h"
 #include "socket.h"
 #include "controller.h"
 #include "system.h"
@@ -25,24 +26,11 @@
 #include "blockchain.h"
 #include "profile.h"
 
-#define	DAYLIGHT_PIN 28
-
-bool is_night_time;
-
-int server_socket;
-int active_socket;
-
-/// <summary>
-/// Interrupt service routine for PIR sensors.
-/// </summary>
 void did_detect_motion_signal(void)
 {
 	puts("motion detected");
 }
 
-/// <summary>
-/// Interrupt service routine for light sensors. Emits a daylight report to client and adjusts home lighting.
-/// </summary>
 void did_detect_daylight_change(void)
 {
 	int result = digitalRead(DAYLIGHT_PIN);
@@ -83,9 +71,6 @@ void did_detect_daylight_change(void)
 	}
 }
 
-/// <summary>
-/// Registers interrupts to home sensors.
-/// </summary>
 int arm_sensors(void)
 {
 	pinMode(DAYLIGHT_PIN, INPUT);
@@ -93,13 +78,8 @@ int arm_sensors(void)
 	return wiringPiISR(DAYLIGHT_PIN, INT_EDGE_BOTH, &did_detect_daylight_change);
 }
 
-/// <summary>
-/// Populates home with rooms and nodes within.
-/// </summary>
 void populate_rooms(void)
 {
-	uint8_t rgb_gpio[3] = { 23, 24, 25 };
-
 	add_room("home", 1);
 	add_node_to_room_handle("home", "main_alarm", NODEALARM, 26, INT_EDGE_RISING, &did_detect_motion_signal);
 
@@ -123,10 +103,77 @@ void populate_rooms(void)
 	add_node_to_room("garage", "door", NODEDOOR, 1);
 }
 
-/// <summary>
-/// Main controller body. Receives and processes messages from socket connections.
-/// </summary>
-int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.html
+void evaluate_message(const int client_socket, const char *message)
+{
+	cJSON *root_object = cJSON_Parse(message);
+	cJSON *payload_object = cJSON_GetObjectItem(root_object, "payload");
+
+	switch ((Command)(cJSON_GetObjectItem(root_object, "type")->valueint))
+	{
+	case CMDNODE:
+	{
+		const char *room = cJSON_GetObjectItem(payload_object, "room")->valuestring;
+		const char *node = cJSON_GetObjectItem(payload_object, "node")->valuestring;
+		const int value = cJSON_GetObjectItem(payload_object, "value")->valueint;
+
+		if (record_proposed_transaction_from_client(client_socket, node, room, value, false))
+		{
+			apply_value_to_node(room, node, value);
+			printf("[<] Set %s (%s) to %d\n", node, room, value);
+		}
+		else
+		{
+			printf("[!] Rejected %s, %s from Client %d - insufficient permissions\n", node, room, active_socket);
+		}
+
+		break;
+	}
+	case CMDREPORT:
+	{
+		const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
+
+		if (strcmp(report_type, "structure") == 0)
+		{
+			emit_room_structure_json(active_socket);
+		}
+		else if (strcmp(report_type, "system") == 0)
+		{
+			emit_system_report_json(active_socket);
+		}
+	}
+	case CMDIDENTIFICATION:
+	{
+		const char *identification = cJSON_GetObjectItem(payload_object, "value")->valuestring;
+		bind_client_socket_to_profile(identification, client_socket);
+
+		printf("[~] Client %d assigned profile \"%s\" - batching home data\n", client_socket, identification);
+
+		emit_room_structure_json(active_socket);
+		emit_system_report_json(active_socket);
+
+		break;
+	}
+	case CMDDEMO:
+	{
+		const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
+
+		if (strcmp(report_type, "blockchain") == 0)
+		{
+			emit_block_json(true, true);
+		}
+
+		break;
+	}
+	case CMDCONFIRMATION:
+	default:
+	{
+		puts("[!] Received unresolved command");
+		break;
+	}
+	}
+}
+
+int run_server(void)
 {
 	int fdmax = -1;
 	int i = 0;
@@ -158,7 +205,7 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 
 					if (client_socket == -1)
 					{
-						perror("[x] accept");
+						perror("[x] Acceptance failure");
 						continue;
 					}
 					else
@@ -187,69 +234,7 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 						continue;
 					}
 
-					cJSON *root_object = cJSON_Parse(message);
-					cJSON *payload_object = cJSON_GetObjectItem(root_object, "payload");
-
-					switch ((Command)(cJSON_GetObjectItem(root_object, "type")->valueint))
-					{
-					case CMDNODE:
-					{
-						const char *room = cJSON_GetObjectItem(payload_object, "room")->valuestring;
-						const char *node = cJSON_GetObjectItem(payload_object, "node")->valuestring;
-						const int value = cJSON_GetObjectItem(payload_object, "value")->valueint;
-
-						if (record_proposed_transaction_from_client(client_socket, node, room, value, false))
-						{
-							apply_value_to_node(room, node, value);
-							printf("[<] Set %s (%s) to %d\n", node, room, value);
-						}
-						else
-						{
-							printf("[!] Rejected %s, %s from Client %d - insufficient permissions\n", node, room, active_socket);
-						}
-
-						break;
-					}
-					case CMDREPORT:
-					{
-						const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
-
-						if (strcmp(report_type, "structure") == 0)
-						{
-							emit_room_structure_json(active_socket);
-						}
-						else if (strcmp(report_type, "system") == 0)
-						{
-							emit_system_report_json(active_socket);
-						}
-					}
-					case CMDIDENTIFICATION:
-					{
-						const char *identification = cJSON_GetObjectItem(payload_object, "value")->valuestring;
-						bind_client_socket_to_profile(identification, client_socket);
-
-						printf("[~] Client %d assigned profile \"%s\" - batching home data\n", client_socket, identification);
-
-						emit_room_structure_json(active_socket);
-						emit_system_report_json(active_socket);
-
-						break;
-					}
-					case CMDDEMO:
-					{
-						const char *report_type = cJSON_GetObjectItem(payload_object, "type")->valuestring;
-
-						if (strcmp(report_type, "blockchain") == 0)
-						{
-							emit_block_json(true, true);
-						}
-
-						break;
-					}
-					case CMDCONFIRMATION:
-					default:
-						break;
-					}
+					evaluate_message(client_socket, message);
 				}
 			}
 		}
@@ -258,34 +243,15 @@ int run_server(void) // credit to: http://beej.us/guide/bgnet/html/single/bgnet.
 	return 0;
 }
 
-/// <summary>
-/// Terminates a socket and its descriptor.
-/// </summary>
-/// <param name="client_socket">The client socket.</param>
-/// <param name="active_fds">The active FDS.</param>
 void shutdown_socket(int client_socket, fd_set *active_fds)
 {
 	FD_CLR(client_socket, active_fds);
 	close(client_socket);
 }
 
-/// <summary>
-/// Entry point.
-/// </summary>
-/// <param name="argc">Passed arg count</param>
-/// <param name="argv">Passed arg vector</param>
-/// <returns></returns>
 int main(int argc, char *argv[])
 {
-	puts("\
-         @@@@@@        %@@@@@@@  @&         @@@@@@#         ,@@@@@@@  @&\n\
-     @@@@@@@@@     %@@@@@@@@@@@@@@@      @@@@@@@         @@@@@@@@@@@@@@@\n\
-  &@@@@ / @@@    @@@@@    *@@@@@@        @@@@@&       @@@@@.    @@@@@@.\n\
-@@@@@           @@@@@     @@@@@&      @@@     @@@@   @@@@      @@@@@@       /@@\n\
-@@@@        /@@@@@@&     @@@@@@@     @@@@     &@@@@.@@@@     %@@@@@@&     %@@@\n\
-@@@@.     @@@@@@@@/   .@@@@ @@@@( @@@@@@       @@@@@%@@@@@  @@@@ @@@@@ (@@@@\n\
-@@@@@@@@@@@@/  *@@@@@@@@@   @@@@@@@@*@@@@@@@@@@@@@%  @@@@@@@@@,  @@@@@@@@&\n\
- @@@@@@@@@/     *@@@@@@@     @@@@@@/   *@@@@@@@@@/    @@@@@@      @@@@@@&\n\n");
+	puts(CASA_ASCII);
 
 	if (puts("[~] Initialising GPIO pins...") && wiringPiSetup() != 0)
 	{
@@ -309,9 +275,16 @@ int main(int argc, char *argv[])
 	{
 		return -1;
 	}
-	
-	puts("[~] Opening channel...");
-	server_socket = start_server(4045); // atoi(argv[1]));
 
-	return run_server();
+	if (argc > 1)
+	{
+		puts("[~] Opening channel...");
+		server_socket = start_server(atoi(argv[1]));
+
+		return run_server();
+	}
+	else
+	{
+		return run_interactive_demo();
+	}
 }

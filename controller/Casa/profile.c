@@ -191,6 +191,7 @@ int gather_permissions(void)
 		};
 
 		HASH_ADD_STR(profiles, identifier, profile);
+		printf("[+] Loaded policy for profile '%s'\n", profile->identifier);
 	}
 
 	closedir(directory);

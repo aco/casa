@@ -144,7 +144,7 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 	{
 		node->value = new_value;
 
-		for (int i = 0; i < sizeof(node->gpio); i++)
+		for (uint8_t i = 0; i < sizeof(node->gpio); i++)
 		{
 			if (node->gpio[0] != NULL)
 			{
@@ -157,13 +157,10 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 
 	case NODERGB:
 	{
-		int r = (new_value >> 16) & 0xff;
-		int g = (new_value >> 8) & 0xff;
-		int b = (new_value) & 0xff;
-
-		softPwmWrite(node->gpio[0], r);
-		softPwmWrite(node->gpio[1], g);
-		softPwmWrite(node->gpio[2], b);
+		for (uint8_t i = 0; i < sizeof(node->gpio); i++)
+		{
+			softPwmWrite(node->gpio[i], new_value >> 16 - (i * 8) & 0xff);
+		}
 
 		break;
 	}

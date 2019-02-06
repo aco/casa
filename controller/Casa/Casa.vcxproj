@@ -68,6 +68,7 @@
     <ClCompile Include="blockchain.c" />
     <ClCompile Include="controller.c" />
     <ClCompile Include="cJSON.c" />
+    <ClCompile Include="demo.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="profile.c" />
     <ClCompile Include="sha256.c" />
@@ -80,6 +81,8 @@
     <ClInclude Include="command.h" />
     <ClInclude Include="controller.h" />
     <ClInclude Include="cJSON.h" />
+    <ClInclude Include="demo.h" />
+    <ClInclude Include="main.h" />
     <ClInclude Include="node.h" />
     <ClInclude Include="profile.h" />
     <ClInclude Include="room.h" />

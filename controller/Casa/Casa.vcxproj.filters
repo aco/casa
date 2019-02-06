@@ -23,6 +23,9 @@
     <ClCompile Include="profile.c">
       <Filter>Impl</Filter>
     </ClCompile>
+    <ClCompile Include="demo.c">
+      <Filter>Impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header">
@@ -68,6 +71,12 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="profile.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="demo.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
