@@ -1,5 +1,3 @@
-#pragma once
-
 #define	DAYLIGHT_PIN 28
 #define CASA_ASCII "\
          @@@@@@        %@@@@@@@  @&         @@@@@@#         ,@@@@@@@  @&\n\

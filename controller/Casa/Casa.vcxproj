@@ -74,6 +74,7 @@
     <ClCompile Include="sha256.c" />
     <ClCompile Include="socket.c" />
     <ClCompile Include="system.c" />
+    <ClCompile Include="temperature.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="sha256.h" />
     <ClInclude Include="socket.h" />
     <ClInclude Include="system.h" />
+    <ClInclude Include="temperature.h" />
     <ClInclude Include="uthash.h" />
   </ItemGroup>
   <ItemDefinitionGroup />

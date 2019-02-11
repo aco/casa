@@ -14,6 +14,7 @@
 #include "socket.h"
 #include "room.h"
 #include "profile.h"
+#include "temperature.h"
 
 struct Room *rooms = NULL;
 
@@ -178,7 +179,14 @@ void apply_value_to_node(const char *room_name, const char *name, int new_value)
 
 float probe_temperature_from_gpio(int gpio)
 {
-	return 21.5;
+	struct DHT22 *reading = read_temperature_celsius(gpio);
+
+	if (reading != NULL)
+	{
+		return reading->temperature;
+	}
+
+	return 22.5; // retain for demo
 }
 
 void adjust_all_lighting(int brightness)

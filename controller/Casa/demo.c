@@ -82,7 +82,7 @@ int run_interactive_demo(void)
 			}
 		}
 
-		evaluate_message(0, message);
+		//evaluate_message(0, message);
 
 		printf("> (or type \"help\") ");
 	}
